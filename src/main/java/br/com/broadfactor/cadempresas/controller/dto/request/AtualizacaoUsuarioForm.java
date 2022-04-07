@@ -18,15 +18,15 @@ public class AtualizacaoUsuarioForm {
     @NotNull @NotEmpty @Length(min = 14, max = 20)
     private String cnpj;
     @NotNull @NotEmpty @Length(min = 6, max = 20)
-    private String password;
+    private String senha;
 
-    public Usuario atualizar(Long id) {
+    public Usuario toEntity() {
         Usuario usuario = new Usuario();
 
         usuario.setNome(nome);
         usuario.setEmail(email);
         usuario.setCnpj(cnpj);
-        usuario.setPassword(password);
+        usuario.setSenha(senha);
 
         return usuario;
     }

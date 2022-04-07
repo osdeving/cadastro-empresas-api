@@ -5,6 +5,8 @@ import br.com.broadfactor.cadempresas.controller.dto.request.UsuarioForm;
 import br.com.broadfactor.cadempresas.controller.dto.response.DetalhesDoUsuarioDto;
 import br.com.broadfactor.cadempresas.controller.dto.response.UsuarioDto;
 import br.com.broadfactor.cadempresas.model.Usuario;
+import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
+import br.com.broadfactor.cadempresas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,27 +24,23 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class UsuarioController {
+    private final UsuarioService usuarioService;
+
     @PostMapping
     @Transactional
     public ResponseEntity<UsuarioDto> cadastrar(@RequestBody @Valid UsuarioForm usuarioForm, UriComponentsBuilder uriBuilder) {
-        Usuario usuario = usuarioForm.toEntity();
+        Usuario usuario = usuarioService.cadastrar(usuarioForm.toEntity());
 
-        // TODO: salva no banco
-
-        URI uri = uriBuilder.path("/usuarios/{id}").buildAndExpand(1).toUri();
-
+        URI uri = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
         return ResponseEntity.created(uri).body(new UsuarioDto(usuario));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DetalhesDoUsuarioDto> consultar(@PathVariable Long id) {
+        Optional<Usuario> usuario = usuarioService.consultar(id);
 
-        if(id == 1) {
-            Usuario usuario = new Usuario();
-
-            usuario.setNome("teste");
-            usuario.setEmail("email@email.com");
-            return ResponseEntity.ok().body(new DetalhesDoUsuarioDto(usuario));
+        if(usuario.isPresent()) {
+            return ResponseEntity.ok().body(new DetalhesDoUsuarioDto(usuario.get()));
         }
 
         return ResponseEntity.notFound().build();
@@ -51,9 +49,11 @@ public class UsuarioController {
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<UsuarioDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoUsuarioForm form) {
-        if(id == 1) {
-            Usuario usuario = form.atualizar(id);
-            return ResponseEntity.ok(new UsuarioDto(usuario));
+
+        Optional<Usuario> usuario = usuarioService.atualizar(id, form.toEntity());
+
+        if(usuario.isPresent()) {
+            return ResponseEntity.ok().body(new UsuarioDto(usuario.get()));
         }
 
         return ResponseEntity.notFound().build();
