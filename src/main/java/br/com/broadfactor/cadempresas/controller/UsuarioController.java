@@ -37,13 +37,10 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<DetalhesDoUsuarioDto> consultar(@PathVariable Long id) {
+        Optional<Usuario> usuario = usuarioService.consultar(id);
 
-        if(id == 1) {
-            Usuario usuario = new Usuario();
-
-            usuario.setNome("teste");
-            usuario.setEmail("email@email.com");
-            return ResponseEntity.ok().body(new DetalhesDoUsuarioDto(usuario));
+        if(usuario.isPresent()) {
+            return ResponseEntity.ok().body(new DetalhesDoUsuarioDto(usuario.get()));
         }
 
         return ResponseEntity.notFound().build();
