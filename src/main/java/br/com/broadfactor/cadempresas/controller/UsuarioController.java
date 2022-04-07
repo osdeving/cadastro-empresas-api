@@ -1,6 +1,7 @@
 package br.com.broadfactor.cadempresas.controller;
 
 import br.com.broadfactor.cadempresas.controller.dto.request.UsuarioForm;
+import br.com.broadfactor.cadempresas.controller.dto.response.DetalhesDoUsuarioDto;
 import br.com.broadfactor.cadempresas.controller.dto.response.UsuarioDto;
 import br.com.broadfactor.cadempresas.model.Usuario;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -29,5 +31,19 @@ public class UsuarioController {
         URI uri = uriBuilder.path("/usuarios/{id}").buildAndExpand(1).toUri();
 
         return ResponseEntity.created(uri).body(new UsuarioDto(usuario));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DetalhesDoUsuarioDto> consultar(@PathVariable Long id) {
+
+        if(id == 1) {
+            Usuario usuario = new Usuario();
+
+            usuario.setNome("teste");
+            usuario.setEmail("email@email.com");
+            return ResponseEntity.ok().body(new DetalhesDoUsuarioDto(usuario));
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
