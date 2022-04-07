@@ -49,9 +49,11 @@ public class UsuarioController {
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<UsuarioDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoUsuarioForm form) {
-        if(id == 1) {
-            Usuario usuario = form.atualizar(id);
-            return ResponseEntity.ok(new UsuarioDto(usuario));
+
+        Optional<Usuario> usuario = usuarioService.atualizar(id, form.toEntity());
+
+        if(usuario.isPresent()) {
+            return ResponseEntity.ok().body(new UsuarioDto(usuario.get()));
         }
 
         return ResponseEntity.notFound().build();

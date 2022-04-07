@@ -20,7 +20,7 @@ public class AtualizacaoUsuarioForm {
     @NotNull @NotEmpty @Length(min = 6, max = 20)
     private String senha;
 
-    public Usuario atualizar(Long id) {
+    public Usuario toEntity() {
         Usuario usuario = new Usuario();
 
         usuario.setNome(nome);

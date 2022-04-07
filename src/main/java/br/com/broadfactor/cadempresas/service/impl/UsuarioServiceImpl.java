@@ -22,4 +22,20 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Optional<Usuario> consultar(Long id) {
         return usuarioRepository.findById(id);
     }
+
+    @Override
+    public Optional<Usuario> atualizar(Long id, Usuario usuario) {
+
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
+
+        if(optionalUsuario.isPresent()) {
+            var u = optionalUsuario.get();
+            u.setCnpj(usuario.getCnpj());
+            u.setEmail(usuario.getEmail());
+            u.setNome(usuario.getNome());
+            u.setSenha(usuario.getSenha());
+        }
+
+        return optionalUsuario;
+    }
 }
