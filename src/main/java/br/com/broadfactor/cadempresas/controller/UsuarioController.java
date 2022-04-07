@@ -21,7 +21,7 @@ import java.net.URI;
 public class UsuarioController {
     @PostMapping
     @Transactional
-    public ResponseEntity<UsuarioDto> cadastrar(@RequestBody UsuarioForm usuarioForm, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<UsuarioDto> cadastrar(@RequestBody @Valid UsuarioForm usuarioForm, UriComponentsBuilder uriBuilder) {
         Usuario usuario = usuarioForm.toEntity();
 
         // TODO: salva no banco
