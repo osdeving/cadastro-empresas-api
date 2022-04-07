@@ -1,5 +1,6 @@
 package br.com.broadfactor.cadempresas.controller;
 
+import br.com.broadfactor.cadempresas.controller.dto.request.AtualizacaoUsuarioForm;
 import br.com.broadfactor.cadempresas.controller.dto.request.UsuarioForm;
 import br.com.broadfactor.cadempresas.controller.dto.response.DetalhesDoUsuarioDto;
 import br.com.broadfactor.cadempresas.controller.dto.response.UsuarioDto;
@@ -42,6 +43,17 @@ public class UsuarioController {
             usuario.setNome("teste");
             usuario.setEmail("email@email.com");
             return ResponseEntity.ok().body(new DetalhesDoUsuarioDto(usuario));
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<UsuarioDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoUsuarioForm form) {
+        if(id == 1) {
+            Usuario usuario = form.atualizar(id);
+            return ResponseEntity.ok(new UsuarioDto(usuario));
         }
 
         return ResponseEntity.notFound().build();
