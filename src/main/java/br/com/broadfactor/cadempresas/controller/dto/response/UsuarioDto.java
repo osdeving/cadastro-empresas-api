@@ -3,15 +3,12 @@ package br.com.broadfactor.cadempresas.controller.dto.response;
 import br.com.broadfactor.cadempresas.model.Usuario;
 import lombok.Data;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Data
 public class UsuarioDto {
     private String nome;
     private String email;
     private String cnpj;
-    private String password;
+    private String senha;
 
     public UsuarioDto() {
     }
@@ -20,6 +17,6 @@ public class UsuarioDto {
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();
         this.cnpj = usuario.getCnpj();
-        this.password = usuario.getPassword();
+        this.senha = usuario.getSenha();
     }
 }

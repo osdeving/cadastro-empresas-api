@@ -1,15 +1,28 @@
 package br.com.broadfactor.cadempresas.model;
 
-import com.sun.istack.NotNull;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotEmpty;
+import javax.persistence.*;
 
 @Data
+@Entity
+@Table(name="usuario")
 public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
     private String nome;
     private String email;
     private String cnpj;
-    private String password;
+    private String senha;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
