@@ -1,5 +1,8 @@
 package br.com.broadfactor.cadempresas.service.impl;
 
+import br.com.broadfactor.cadempresas.dto.EmpresaDto;
+import br.com.broadfactor.cadempresas.dto.utils.EmpresaDtoUtils;
+import br.com.broadfactor.cadempresas.model.Empresa;
 import br.com.broadfactor.cadempresas.model.Usuario;
 import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
@@ -12,9 +15,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
+    private final RequestClientService client;
 
     @Override
     public Usuario cadastrar(Usuario usuario) {
+        EmpresaDto empresaDto = client.getEmpresaByCnpj(usuario.getCnpj()).block();
+        usuario.setEmpresa(EmpresaDtoUtils.toEntity(empresaDto));
+
         return usuarioRepository.save(usuario);
     }
 
