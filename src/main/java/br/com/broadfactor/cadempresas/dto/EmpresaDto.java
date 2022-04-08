@@ -1,6 +1,10 @@
 package br.com.broadfactor.cadempresas.dto;
 
+import br.com.broadfactor.cadempresas.dto.utils.EmpresaDtoUtils;
+import br.com.broadfactor.cadempresas.dto.utils.MapperUtils;
+import br.com.broadfactor.cadempresas.model.Empresa;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +18,7 @@ import java.util.List;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmpresaDto{
 
 	@JsonProperty("atividade_principal")
@@ -105,4 +110,39 @@ public class EmpresaDto{
 
 	@JsonProperty("status")
 	private String status;
+
+//	private EmpresaDto convertToDto(Empresa empresa) {
+//		var empresaDto = MapperUtils.map(empresa, EmpresaDto.class);
+//
+//		empresaDto.setAtividadesSecundarias(MapperUtils.mapList(modelMapper, empresa.getAtividadeSecundaria(), AtividadeDto.class));
+//		empresaDto.setAtividadePrincipal(MapperUtils.mapList(modelMapper, empresa.getAtividadePrincipal(), AtividadeDto.class));
+//		empresaDto.setQsa(MapperUtils.mapList(modelMapper, empresa.getQuadroSociosAdmins(), QsaItemDto.class));
+//
+//
+//		return empresaDto;
+//	}
+//	public EmpresaDto toDto(Empresa empresa) {
+//		EmpresaDto dto = new EmpresaDto();
+//
+//		dto.setAtividadePrincipal(empresa.getAtividadePrincipal(),
+//			empresa.getTipo(),
+//			empresa.getContato().getTelefone(),
+//				empresa.getSituacao(),
+//				empresa.getEndereco().getNumero(),
+//				empresa.getSituacaoEspecial(),
+//				empresa.getUltimaAtualizacao(),
+//				empresa.getCnpj(),
+//				empresa.getEndereco().getCep(),
+//				null,
+//				empresa.getAtividadeSecundaria(),
+//				empresa.getEndereco().getUf(),
+//				empresa.getEndereco().getComplemento(),
+//				empresa.getNaturezaJuridica(),
+//				empresa.getMotivoSituacao(),
+//				empresa.getPorte(),
+//
+//
+//
+//
+//	}
 }

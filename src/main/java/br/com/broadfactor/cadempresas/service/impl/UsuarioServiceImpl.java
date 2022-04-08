@@ -1,7 +1,10 @@
 package br.com.broadfactor.cadempresas.service.impl;
 
+import br.com.broadfactor.cadempresas.dto.AtividadeDto;
 import br.com.broadfactor.cadempresas.dto.EmpresaDto;
+import br.com.broadfactor.cadempresas.dto.QsaItemDto;
 import br.com.broadfactor.cadempresas.dto.utils.EmpresaDtoUtils;
+import br.com.broadfactor.cadempresas.dto.utils.MapperUtils;
 import br.com.broadfactor.cadempresas.model.Empresa;
 import br.com.broadfactor.cadempresas.model.Usuario;
 import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
@@ -45,4 +48,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return optionalUsuario;
     }
+
+
 }

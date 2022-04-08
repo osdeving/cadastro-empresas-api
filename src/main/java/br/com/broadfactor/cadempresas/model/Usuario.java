@@ -28,6 +28,6 @@ public class Usuario {
     @Column(name = "senha")
     private String senha;
 
-    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private Empresa empresa;
 }
