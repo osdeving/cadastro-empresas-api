@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -66,13 +65,13 @@ public class Empresa {
     private String ultimaAtualizacao;
 
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    List<QuadroSociosAdmin> quadroSociosAdmins = new ArrayList<>();
+    List<QuadroSociosAdmin> quadroSociosAdmins;
 
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    List<AtividadePrincipal> atividadePrincipal = new ArrayList<>();
+    List<AtividadePrincipal> atividadePrincipal;
 
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    List<AtividadeSecundaria> atividadeSecundaria = new ArrayList<>();
+    List<AtividadeSecundaria> atividadeSecundaria;
 
     @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "empresa_id")

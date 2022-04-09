@@ -5,29 +5,14 @@ import br.com.broadfactor.cadempresas.dto.EmpresaDto;
 import br.com.broadfactor.cadempresas.dto.QsaItemDto;
 import br.com.broadfactor.cadempresas.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmpresaDtoUtils {
     public static Empresa toEntity(EmpresaDto dto) {
-        Empresa empresa = new Empresa();
+        //Empresa empresa = new Empresa();
 
-        empresa.setNome(dto.getNome());
-        empresa.setFantasia(dto.getFantasia());
-        empresa.setCnpj(dto.getCnpj());
-        empresa.setTipo(dto.getTipo());
-        empresa.setPorte(dto.getPorte());
-        empresa.setAbertura(dto.getAbertura());
-        empresa.setMotivoSituacao(dto.getMotivoSituacao());
-        empresa.setDataSituacao(dto.getDataSituacao());
-        empresa.setEfr(dto.getEfr());
-        empresa.setDataSituacaoEspecial(dto.getDataSituacaoEspecial());
-        empresa.setCapitalSocial(dto.getCapitalSocial());
-        empresa.setStatus(dto.getStatus());
-        empresa.setUltimaAtualizacao(dto.getUltimaAtualizacao());
-        empresa.setSituacao(dto.getSituacao());
-        empresa.setSituacaoEspecial(dto.getSituacaoEspecial());
-        empresa.setNaturezaJuridica(dto.getNaturezaJuridica());
-        empresa.setDataSituacao(dto.getDataSituacao());
+        Empresa empresa = MapperUtils.getMapper().map(dto, Empresa.class);
 
         fillAtividadePrincipal(empresa, dto.getAtividadePrincipal());
         fillAtividadeSecundaria(empresa, dto.getAtividadesSecundarias());
@@ -65,6 +50,11 @@ public class EmpresaDtoUtils {
             AtividadeSecundaria atividade = new AtividadeSecundaria();
             atividade.setCode(a.getCode());
             atividade.setText(a.getText());
+
+            if(empresa.getAtividadeSecundaria() == null) {
+                empresa.setAtividadeSecundaria(new ArrayList<>());
+            }
+
             empresa.getAtividadeSecundaria().add(atividade);
         });
     }
@@ -74,6 +64,11 @@ public class EmpresaDtoUtils {
             AtividadePrincipal atividade = new AtividadePrincipal();
             atividade.setCode(a.getCode());
             atividade.setText(a.getText());
+
+            if(empresa.getAtividadePrincipal() == null) {
+                empresa.setAtividadePrincipal(new ArrayList<>());
+            }
+
             empresa.getAtividadePrincipal().add(atividade);
         });
     }
@@ -87,6 +82,11 @@ public class EmpresaDtoUtils {
             quadroSociosAdmins.setPaisOrigem(qsa.getPaisOrigem());
             quadroSociosAdmins.setNomeRepresentanteLegal(qsa.getNomeRepLegal());
             quadroSociosAdmins.setQualificacaoRepresentanteLegal(qsa.getQualRepLegal());
+
+            if(empresa.getQuadroSociosAdmins() == null) {
+                empresa.setQuadroSociosAdmins(new ArrayList<>());
+            }
+
             empresa.getQuadroSociosAdmins().add(quadroSociosAdmins);
         });
     }

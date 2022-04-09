@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface UsuarioService {
     Usuario cadastrar(Usuario usuario);
     Optional<Usuario> consultar(Long id);
-    Optional<Usuario> atualizar(Long id, Usuario usuario);
+    Optional<Usuario> atualizar(Usuario usuario);
 }
