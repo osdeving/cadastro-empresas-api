@@ -4,20 +4,12 @@ import br.com.broadfactor.cadempresas.controller.dto.request.AtualizacaoUsuarioF
 import br.com.broadfactor.cadempresas.controller.dto.request.UsuarioForm;
 import br.com.broadfactor.cadempresas.controller.dto.response.DetalhesDoUsuarioDto;
 import br.com.broadfactor.cadempresas.controller.dto.response.UsuarioDto;
-import br.com.broadfactor.cadempresas.dto.AtividadeDto;
-import br.com.broadfactor.cadempresas.dto.EmpresaDto;
-import br.com.broadfactor.cadempresas.dto.QsaItemDto;
 import br.com.broadfactor.cadempresas.dto.utils.MapperUtils;
-import br.com.broadfactor.cadempresas.model.AtividadeSecundaria;
-import br.com.broadfactor.cadempresas.model.Empresa;
 import br.com.broadfactor.cadempresas.model.Usuario;
-import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -48,12 +39,15 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<UsuarioDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoUsuarioForm form) {
+    public ResponseEntity<DetalhesDoUsuarioDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoUsuarioForm form) {
+        Usuario usuario = MapperUtils.map(form, Usuario.class);
+        usuario.setId(id);
 
-        Optional<Usuario> usuario = usuarioService.atualizar(id, form.toEntity());
+        Optional<Usuario> optionalUsuario = usuarioService.atualizar(usuario);
 
-        if(usuario.isPresent()) {
-            return ResponseEntity.ok().body(new UsuarioDto(usuario.get()));
+        if(optionalUsuario.isPresent()) {
+            DetalhesDoUsuarioDto detalhesDoUsuarioDto = new DetalhesDoUsuarioDto(optionalUsuario.get());
+            return ResponseEntity.ok().body(detalhesDoUsuarioDto);
         }
 
         return ResponseEntity.notFound().build();
@@ -65,11 +59,9 @@ public class UsuarioController {
 
         if(optionalUsuario.isPresent()) {
             Usuario usuario = optionalUsuario.get();
-            Empresa empresa = usuario.getEmpresa();
 
-            DetalhesDoUsuarioDto dto = DetalhesDoUsuarioDto.from(usuario, empresa);
-
-            return ResponseEntity.ok().body(dto);
+            DetalhesDoUsuarioDto detalhesDoUsuarioDto = new DetalhesDoUsuarioDto(usuario);
+            return ResponseEntity.ok().body(detalhesDoUsuarioDto);
         }
 
         return ResponseEntity.notFound().build();

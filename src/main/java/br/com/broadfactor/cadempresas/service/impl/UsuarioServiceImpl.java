@@ -1,18 +1,19 @@
 package br.com.broadfactor.cadempresas.service.impl;
 
-import br.com.broadfactor.cadempresas.dto.AtividadeDto;
 import br.com.broadfactor.cadempresas.dto.EmpresaDto;
-import br.com.broadfactor.cadempresas.dto.QsaItemDto;
 import br.com.broadfactor.cadempresas.dto.utils.EmpresaDtoUtils;
-import br.com.broadfactor.cadempresas.dto.utils.MapperUtils;
-import br.com.broadfactor.cadempresas.model.Empresa;
 import br.com.broadfactor.cadempresas.model.Usuario;
 import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -34,19 +35,47 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Optional<Usuario> atualizar(Long id, Usuario usuario) {
+    public Optional<Usuario> atualizar(Usuario usuario) {
 
-        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(usuario.getId());
 
         if(optionalUsuario.isPresent()) {
-            var u = optionalUsuario.get();
-            u.setCnpj(usuario.getCnpj());
-            u.setEmail(usuario.getEmail());
-            u.setNome(usuario.getNome());
-            u.setSenha(usuario.getSenha());
+            Usuario usuarioToUpdate = optionalUsuario.get();
+            BeanUtils.copyProperties(usuario, usuarioToUpdate, getNullPropertyNames(usuario, usuarioToUpdate));
+
+
+            return Optional.of(usuarioToUpdate);
         }
 
-        return optionalUsuario;
+        return Optional.empty();
+    }
+
+    public String[] getNullPropertyNames (Object source, Object target) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        final BeanWrapper targetBean = new BeanWrapperImpl(target);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+        Set<String> emptyNames = new HashSet<String>();
+        for(java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            Class<?> accessor = src.getPropertyType(pd.getName());
+            System.out.println(accessor);
+            if (srcValue == null) {
+                emptyNames.add(pd.getName());
+            }else  {
+                Class<?> acc = src.getPropertyType(pd.getName());
+                String cname = acc.getCanonicalName();
+                if(cname.contains("br.com.broadfactor.cadempresas.model")) {
+                    Object targetVal = targetBean.getPropertyValue(pd.getName());
+                    if(targetVal  != null) {
+                        BeanUtils.copyProperties(srcValue,targetVal , getNullPropertyNames(srcValue,targetVal));
+                        emptyNames.add(pd.getName());
+                    }
+                }
+            }
+        }
+
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
     }
 
 
