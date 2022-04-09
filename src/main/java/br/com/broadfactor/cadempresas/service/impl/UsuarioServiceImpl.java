@@ -2,6 +2,9 @@ package br.com.broadfactor.cadempresas.service.impl;
 
 import br.com.broadfactor.cadempresas.dto.EmpresaDto;
 import br.com.broadfactor.cadempresas.dto.utils.EmpresaDtoUtils;
+import br.com.broadfactor.cadempresas.exceptions.CnpjJaExisteException;
+import br.com.broadfactor.cadempresas.exceptions.EmailJaExisteException;
+import br.com.broadfactor.cadempresas.exceptions.UsuarioJaExisteException;
 import br.com.broadfactor.cadempresas.model.Usuario;
 import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
@@ -23,6 +26,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario cadastrar(Usuario usuario) {
+        Usuario u = usuarioRepository.findByEmail(usuario.getEmail());
+
+        if(u != null) {
+            throw new EmailJaExisteException("Email já cadastrado");
+        }
+
+        u = usuarioRepository.findByCnpj(usuario.getCnpj());
+
+        if(u != null) {
+            throw new CnpjJaExisteException("CNPJ já cadastrado");
+        }
+
         EmpresaDto empresaDto = client.getEmpresaByCnpj(usuario.getCnpj()).block();
         usuario.setEmpresa(EmpresaDtoUtils.toEntity(empresaDto));
 

@@ -1,5 +1,8 @@
 package br.com.broadfactor.cadempresas.configuration.validation;
 
+import br.com.broadfactor.cadempresas.exceptions.CnpjJaExisteException;
+import br.com.broadfactor.cadempresas.exceptions.EmailJaExisteException;
+import br.com.broadfactor.cadempresas.exceptions.UsuarioJaExisteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -32,5 +35,17 @@ public class ErroDeValidacaoHandler {
         });
 
         return dto;
+    }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(EmailJaExisteException.class)
+    public ErroDeFormularioDto handle(EmailJaExisteException exception) {
+        return new ErroDeFormularioDto("email", exception.getMessage());
+    }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(CnpjJaExisteException.class)
+    public ErroDeFormularioDto handle(CnpjJaExisteException exception) {
+        return new ErroDeFormularioDto("cnpj", exception.getMessage());
     }
 }
