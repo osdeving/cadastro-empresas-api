@@ -4,11 +4,11 @@ import br.com.broadfactor.cadempresas.dto.EmpresaDto;
 import br.com.broadfactor.cadempresas.dto.utils.EmpresaDtoUtils;
 import br.com.broadfactor.cadempresas.exceptions.CnpjJaExisteException;
 import br.com.broadfactor.cadempresas.exceptions.EmailJaExisteException;
-import br.com.broadfactor.cadempresas.exceptions.UsuarioJaExisteException;
 import br.com.broadfactor.cadempresas.model.Usuario;
 import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -20,6 +20,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final RequestClientService client;
@@ -38,8 +39,12 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new CnpjJaExisteException("CNPJ já cadastrado");
         }
 
-        EmpresaDto empresaDto = client.getEmpresaByCnpj(usuario.getCnpj()).block();
-        usuario.setEmpresa(EmpresaDtoUtils.toEntity(empresaDto));
+        try {
+            EmpresaDto empresaDto = client.getEmpresaByCnpj(usuario.getCnpj()).block();
+            usuario.setEmpresa(EmpresaDtoUtils.toEntity(empresaDto));
+        } catch(Exception ex) {
+            log.info("Erro ao consultar empresa no serviço: " + ex.getMessage());
+        }
 
         return usuarioRepository.save(usuario);
     }
