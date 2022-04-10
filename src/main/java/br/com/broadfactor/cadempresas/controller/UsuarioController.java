@@ -9,14 +9,15 @@ import br.com.broadfactor.cadempresas.model.Usuario;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.security.Principal;
 import java.util.Optional;
 
 @RestController
@@ -25,11 +26,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UsuarioController {
     private final UsuarioService usuarioService;
-    private final ModelMapper modelMapper;
+    private final PasswordEncoder encoder;
 
-    @PostMapping
+    @PostMapping("/cadastrar")
     @Transactional
     public ResponseEntity<UsuarioDto> cadastrar(@RequestBody @Valid UsuarioForm usuarioForm, UriComponentsBuilder uriBuilder) {
+        usuarioForm.setSenha(encoder.encode(usuarioForm.getSenha()));
         Usuario usuario = usuarioService.cadastrar(usuarioForm.toEntity());
 
         URI uri = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
@@ -37,12 +39,10 @@ public class UsuarioController {
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping("/empresa")
     @Transactional
-    public ResponseEntity<DetalhesDoUsuarioDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoUsuarioForm form) {
+    public ResponseEntity<DetalhesDoUsuarioDto> atualizar(@RequestBody @Valid AtualizacaoUsuarioForm form) {
         Usuario usuario = MapperUtils.map(form, Usuario.class);
-        usuario.setId(id);
-
         Optional<Usuario> optionalUsuario = usuarioService.atualizar(usuario);
 
         if(optionalUsuario.isPresent()) {
@@ -53,9 +53,9 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DetalhesDoUsuarioDto> consultar(@PathVariable Long id) {
-        Optional<Usuario> optionalUsuario = usuarioService.consultar(id);
+    @GetMapping("/empresa")
+    public ResponseEntity<DetalhesDoUsuarioDto> consultar(Principal principal) {
+        Optional<Usuario> optionalUsuario = usuarioService.consultar(principal.getName());
 
         if(optionalUsuario.isPresent()) {
             Usuario usuario = optionalUsuario.get();

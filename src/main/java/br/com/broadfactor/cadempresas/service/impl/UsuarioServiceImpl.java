@@ -2,101 +2,99 @@ package br.com.broadfactor.cadempresas.service.impl;
 
 import br.com.broadfactor.cadempresas.dto.EmpresaDto;
 import br.com.broadfactor.cadempresas.dto.utils.EmpresaDtoUtils;
+import br.com.broadfactor.cadempresas.dto.utils.MapperUtils;
 import br.com.broadfactor.cadempresas.exceptions.CnpjJaExisteException;
 import br.com.broadfactor.cadempresas.exceptions.EmailJaExisteException;
+import br.com.broadfactor.cadempresas.exceptions.EmailNaoCorrespondeException;
+import br.com.broadfactor.cadempresas.exceptions.UsuarioJaExisteException;
+import br.com.broadfactor.cadempresas.model.Login;
 import br.com.broadfactor.cadempresas.model.Usuario;
+import br.com.broadfactor.cadempresas.repositories.LoginRepository;
 import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
+    private final LoginRepository loginRepository;
     private final RequestClientService client;
 
     @Override
     public Usuario cadastrar(Usuario usuario) {
-        Usuario u = usuarioRepository.findByEmail(usuario.getEmail());
-
-        if(u != null) {
-            throw new EmailJaExisteException("Email já cadastrado");
-        }
-
-        u = usuarioRepository.findByCnpj(usuario.getCnpj());
-
-        if(u != null) {
-            throw new CnpjJaExisteException("CNPJ já cadastrado");
-        }
+        verificaSeUsuarioExiste(usuario);
 
         try {
             EmpresaDto empresaDto = client.getEmpresaByCnpj(usuario.getCnpj()).block();
             usuario.setEmpresa(EmpresaDtoUtils.toEntity(empresaDto));
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             log.info("Erro ao consultar empresa no serviço: " + ex.getMessage());
         }
+
+        criaNovoLoginUsuario(usuario);
 
         return usuarioRepository.save(usuario);
     }
 
+    private void verificaSeUsuarioExiste(Usuario usuario) {
+        Optional<Usuario> optionalUsuario = usuarioRepository.findByEmail(usuario.getEmail());
+
+        if (optionalUsuario.isPresent()) {
+            throw new EmailJaExisteException("Email já cadastrado");
+        }
+
+        String cnpj = usuario.getCnpj().replaceAll("\\D", "");
+        usuario.setCnpj(cnpj);
+
+        optionalUsuario = usuarioRepository.findByCnpj(cnpj);
+
+        if (optionalUsuario.isPresent()) {
+            throw new CnpjJaExisteException("CNPJ já cadastrado");
+        }
+    }
+
     @Override
-    public Optional<Usuario> consultar(Long id) {
-        return usuarioRepository.findById(id);
+    public Optional<Usuario> consultar(String email) {
+        Optional<Usuario> optionalUsuario = usuarioRepository.findByEmail(email);
+        return optionalUsuario;
+    }
+
+    private Login criaNovoLoginUsuario(Usuario usuario) {
+        Login login = new Login();
+
+        login.setLogin(usuario.getEmail());
+        login.setPassword(usuario.getSenha());
+
+        Optional<Login> optionalLogin = loginRepository.findByLogin(login.getLogin());
+
+        if (optionalLogin.isPresent()) {
+            throw new UsuarioJaExisteException("Usuario já cadastrado");
+        }
+
+        return loginRepository.save(login);
     }
 
     @Override
     public Optional<Usuario> atualizar(Usuario usuario) {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<Usuario> optionalUsuario = usuarioRepository.findByEmail(email);
 
-        Optional<Usuario> optionalUsuario = usuarioRepository.findById(usuario.getId());
-
-        if(optionalUsuario.isPresent()) {
-            Usuario usuarioToUpdate = optionalUsuario.get();
-            BeanUtils.copyProperties(usuario, usuarioToUpdate, getNullPropertyNames(usuario, usuarioToUpdate));
-
-
-            return Optional.of(usuarioToUpdate);
+        if (!optionalUsuario.isPresent()) {
+            throw  new EmailNaoCorrespondeException("O email do usuário deve corresponder ao email do usuário logado");
         }
 
-        return Optional.empty();
+        Usuario usuarioToUpdate = optionalUsuario.get();
+        MapperUtils.nonNullAndNestedAwareCopy(usuario, usuarioToUpdate);
+
+
+        return Optional.of(usuarioToUpdate);
+
     }
-
-    public String[] getNullPropertyNames (Object source, Object target) {
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        final BeanWrapper targetBean = new BeanWrapperImpl(target);
-        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
-        Set<String> emptyNames = new HashSet<String>();
-        for(java.beans.PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            Class<?> accessor = src.getPropertyType(pd.getName());
-            System.out.println(accessor);
-            if (srcValue == null) {
-                emptyNames.add(pd.getName());
-            }else  {
-                Class<?> acc = src.getPropertyType(pd.getName());
-                String cname = acc.getCanonicalName();
-                if(cname.contains("br.com.broadfactor.cadempresas.model")) {
-                    Object targetVal = targetBean.getPropertyValue(pd.getName());
-                    if(targetVal  != null) {
-                        BeanUtils.copyProperties(srcValue,targetVal , getNullPropertyNames(srcValue,targetVal));
-                        emptyNames.add(pd.getName());
-                    }
-                }
-            }
-        }
-
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
-    }
-
-
 }
