@@ -9,6 +9,7 @@ import br.com.broadfactor.cadempresas.model.Usuario;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +35,7 @@ public class UsuarioController {
         usuarioForm.setSenha(encoder.encode(usuarioForm.getSenha()));
         Usuario usuario = usuarioService.cadastrar(usuarioForm.toEntity());
 
-        URI uri = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
-        return ResponseEntity.created(uri).body(new UsuarioDto(usuario));
+        return new ResponseEntity<>(new UsuarioDto(usuario), HttpStatus.CREATED);
     }
 
 
