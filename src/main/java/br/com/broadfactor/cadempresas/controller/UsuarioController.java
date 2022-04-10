@@ -25,7 +25,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UsuarioController {
     private final UsuarioService usuarioService;
-    private final ModelMapper modelMapper;
 
     @PostMapping
     @Transactional

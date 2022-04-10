@@ -2,6 +2,7 @@ package br.com.broadfactor.cadempresas.controller;
 
 import br.com.broadfactor.cadempresas.model.Login;
 import br.com.broadfactor.cadempresas.repositories.LoginRepository;
+import br.com.broadfactor.cadempresas.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,12 +14,16 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/usuario")
 @Slf4j
-@RequiredArgsConstructor
 public class LoginController {
     private final LoginRepository repository;
     private final PasswordEncoder encoder;
+
+    public LoginController(LoginRepository repository, PasswordEncoder encoder) {
+        this.repository = repository;
+        this.encoder = encoder;
+    }
 
     @GetMapping("/listarTodos")
     public ResponseEntity<List<Login>> listarTodos() {
