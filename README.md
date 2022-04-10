@@ -5,7 +5,11 @@ Esse projeto foi criado para um processo seletiovo/avaliativo. Consiste de uma A
 
 ### DER da Aplicação
 
+![der](https://github.com/osdeving/cadastro-empresas-api/blob/dfe260b632a7d7fd8a1ce4f0db4c4a03af1c362b/src/main/resources/doc/diagrama-er-cadempresas.png)
+
 ### Log de commits
+
+![git log](https://github.com/osdeving/cadastro-empresas-api/blob/dfe260b632a7d7fd8a1ce4f0db4c4a03af1c362b/src/main/resources/doc/git-log.jpg)
 
 ## Tecnologias
 - Java 11
