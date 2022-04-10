@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/credenciais")
 @Slf4j
 public class LoginController {
     private final LoginRepository repository;

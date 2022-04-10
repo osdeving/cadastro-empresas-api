@@ -9,8 +9,8 @@ import br.com.broadfactor.cadempresas.model.Usuario;
 import br.com.broadfactor.cadempresas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,10 +25,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UsuarioController {
     private final UsuarioService usuarioService;
+    private final PasswordEncoder encoder;
 
-    @PostMapping
+    @PostMapping("/cadastrar")
     @Transactional
     public ResponseEntity<UsuarioDto> cadastrar(@RequestBody @Valid UsuarioForm usuarioForm, UriComponentsBuilder uriBuilder) {
+        usuarioForm.setSenha(encoder.encode(usuarioForm.getSenha()));
         Usuario usuario = usuarioService.cadastrar(usuarioForm.toEntity());
 
         URI uri = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();

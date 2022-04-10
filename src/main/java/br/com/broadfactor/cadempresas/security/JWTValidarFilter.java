@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class JWTValidarFilter extends BasicAuthenticationFilter {
     public static final String HEADER_AUTHORIZATION = "Authorization";
     public static final String AUTHORIZATION_PREFIX = "Bearer ";
+
     public JWTValidarFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
