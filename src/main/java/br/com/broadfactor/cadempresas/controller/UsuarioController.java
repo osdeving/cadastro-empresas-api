@@ -38,12 +38,10 @@ public class UsuarioController {
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping("/empresa")
     @Transactional
-    public ResponseEntity<DetalhesDoUsuarioDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoUsuarioForm form) {
+    public ResponseEntity<DetalhesDoUsuarioDto> atualizar(@RequestBody @Valid AtualizacaoUsuarioForm form) {
         Usuario usuario = MapperUtils.map(form, Usuario.class);
-        usuario.setId(id);
-
         Optional<Usuario> optionalUsuario = usuarioService.atualizar(usuario);
 
         if(optionalUsuario.isPresent()) {
@@ -54,9 +52,9 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DetalhesDoUsuarioDto> consultar(@PathVariable Long id) {
-        Optional<Usuario> optionalUsuario = usuarioService.consultar(id);
+    @GetMapping("/empresa/{cnpj}")
+    public ResponseEntity<DetalhesDoUsuarioDto> consultar(@PathVariable String cnpj) {
+        Optional<Usuario> optionalUsuario = usuarioService.consultar(cnpj);
 
         if(optionalUsuario.isPresent()) {
             Usuario usuario = optionalUsuario.get();

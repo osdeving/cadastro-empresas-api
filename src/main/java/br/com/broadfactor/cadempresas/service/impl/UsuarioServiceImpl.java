@@ -33,9 +33,12 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new EmailJaExisteException("Email já cadastrado");
         }
 
-        u = usuarioRepository.findByCnpj(usuario.getCnpj());
+        String cnpj = usuario.getCnpj().replaceAll("\\D", "");
+        usuario.setCnpj(cnpj);
 
-        if(u != null) {
+        Optional<Usuario> optionalUsuario = usuarioRepository.findByCnpj(cnpj);
+
+        if(optionalUsuario.isPresent()) {
             throw new CnpjJaExisteException("CNPJ já cadastrado");
         }
 
@@ -49,6 +52,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         criaNovoLoginUsuario(usuario);
 
         return usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public Optional<Usuario> consultar(String cnpj) {
+        Optional<Usuario> optionalUsuario = usuarioRepository.findByCnpj(cnpj);
+        return optionalUsuario;
     }
 
     private Login criaNovoLoginUsuario(Usuario usuario) {
@@ -67,11 +76,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Optional<Usuario> consultar(Long id) {
-        return usuarioRepository.findById(id);
-    }
-
-    @Override
     public Optional<Usuario> atualizar(Usuario usuario) {
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(usuario.getId());
@@ -87,8 +91,4 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return Optional.empty();
     }
-
-
-
-
 }
