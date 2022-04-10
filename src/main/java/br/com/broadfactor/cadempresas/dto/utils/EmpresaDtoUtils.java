@@ -10,9 +10,8 @@ import java.util.List;
 
 public class EmpresaDtoUtils {
     public static Empresa toEntity(EmpresaDto dto) {
-        //Empresa empresa = new Empresa();
-
         Empresa empresa = MapperUtils.getMapper().map(dto, Empresa.class);
+
 
         fillAtividadePrincipal(empresa, dto.getAtividadePrincipal());
         fillAtividadeSecundaria(empresa, dto.getAtividadesSecundarias());
