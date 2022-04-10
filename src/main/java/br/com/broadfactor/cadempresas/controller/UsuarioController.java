@@ -17,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.security.Principal;
 import java.util.Optional;
 
 @RestController
@@ -52,9 +53,9 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/empresa/{cnpj}")
-    public ResponseEntity<DetalhesDoUsuarioDto> consultar(@PathVariable String cnpj) {
-        Optional<Usuario> optionalUsuario = usuarioService.consultar(cnpj);
+    @GetMapping("/empresa")
+    public ResponseEntity<DetalhesDoUsuarioDto> consultar(Principal principal) {
+        Optional<Usuario> optionalUsuario = usuarioService.consultar(principal.getName());
 
         if(optionalUsuario.isPresent()) {
             Usuario usuario = optionalUsuario.get();
